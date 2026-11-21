@@ -1,100 +1,17 @@
 <!doctype html>
-<html lang="zh-CN" data-results-api="https://oncloud-nine.hail-mango.workers.dev/api/results">
+<html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#103fc3">
-  <title>快乐云上线 · MD&amp;I 设创生活测试</title>
-  <link rel="stylesheet" href="style.css">
-  <script defer src="quiz-content.js"></script>
-  <script defer src="quiz-engine.js"></script>
-  <script defer src="quiz-qr.js"></script>
-  <script defer src="counts.js"></script>
-  <script defer src="app.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>云朵分院帽 · 第九届设创双年晚会</title>
+<link rel="canonical" href="https://gug671079-collab.github.io/di9/">
+<script>
+const eventPage = new URL("https://gug671079-collab.github.io/di9/");
+eventPage.search = location.search;
+eventPage.hash = location.hash;
+location.replace(eventPage.href);
+</script>
+<meta http-equiv="refresh" content="0;url=https://gug671079-collab.github.io/di9/">
 </head>
-<body>
-  <a class="skip" href="#main">跳到正文</a>
-  <div class="shell">
-    <header class="mast">
-      <a class="monogram" href="#home" aria-label="MD&I 测试首页">MD<span>&amp;</span>I</a>
-      <span class="institution">同济大学设计创意学院<br>第九届双年晚会</span>
-    </header>
-    <main id="main" tabindex="-1"></main>
-    <footer><span id="edition-label">快乐云上线　/　设创生活测试</span></footer>
-    <noscript>请启用 JavaScript 以打开测试。</noscript>
-  </div>
-<!-- Embedded for canvas export when opened directly as a local file. -->
-<template id="local-cloud-art"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="640" height="440" viewBox="0 0 640 440" role="img" aria-labelledby="title desc">
-  <title id="title">一朵会听人说话的云</title>
-  <desc id="desc">一朵宽宽的白云，有卷成小圈的云梢、海蓝色的云底和一对会斜眼瞧人的眼睛。</desc>
-  <view id="idle" viewBox="0 0 640 440"/>
-  <view id="listen" viewBox="640 0 640 440"/>
-  <view id="reveal" viewBox="1280 0 640 440"/>
-  <defs>
-    <path id="outline" d="M49 275C49 242 71 213 108 208C98 160 131 116 178 116C191 116 203 119 214 126C232 82 271 55 321 57C371 59 399 87 414 122C428 113 444 109 462 112C504 117 529 151 527 186C569 189 593 216 591 250C591 267 584 281 575 291C584 295 594 295 608 289C599 311 582 322 558 321C547 353 516 370 476 362C457 384 423 390 393 379C363 400 323 396 298 380C266 397 230 391 211 374C178 380 154 370 143 352C89 365 47 328 49 275Z"/>
-    <clipPath id="cloud-clip"><use xlink:href="#outline"/></clipPath>
-    <linearGradient id="volume" x1=".23" y1=".13" x2=".76" y2=".92" gradientUnits="objectBoundingBox">
-      <stop stop-color="#FFFDF4"/><stop offset=".44" stop-color="#FFFDF9"/><stop offset=".68" stop-color="#EBF3FF"/><stop offset=".87" stop-color="#BACFF5"/><stop offset="1" stop-color="#81A9E7"/>
-    </linearGradient>
-    <radialGradient id="bottom-glow" cx="42%" cy="0%" r="100%">
-      <stop stop-color="#EFF6FF"/><stop offset=".55" stop-color="#DCEAFB"/><stop offset="1" stop-color="#96B8ED"/>
-    </radialGradient>
-    <linearGradient id="wind-ink" x2="1" y2="0" gradientUnits="objectBoundingBox">
-      <stop stop-color="#90AFE2"/><stop offset=".42" stop-color="#6596D9"/><stop offset="1" stop-color="#BBD1E6"/>
-    </linearGradient>
-    <radialGradient id="litho-fade">
-      <stop offset="0" stop-color="white"/><stop offset=".57" stop-color="white" stop-opacity=".73"/><stop offset="1" stop-color="white" stop-opacity="0"/>
-    </radialGradient>
-    <mask id="litho-mask"><ellipse cx="487" cy="347" rx="133" ry="61" fill="url(#litho-fade)"/><ellipse cx="114" cy="297" rx="52" ry="44" fill="url(#litho-fade)"/></mask>
-    <pattern id="litho" patternUnits="userSpaceOnUse" width="6.5" height="6.5" patternTransform="rotate(-16)">
-      <circle cx="2.9" cy="2.9" r="1.17" fill="#538ACC"/>
-    </pattern>
-    <g id="body">
-      <use xlink:href="#outline" fill="url(#volume)" stroke="#81A4DF" stroke-width="2.5" stroke-linejoin="round"/>
-      <g clip-path="url(#cloud-clip)">
-        <path d="M39 282C53 314 77 323 109 321C132 320 144 312 154 302C154 329 171 345 190 349C205 352 221 348 231 341C244 365 274 371 298 357C325 379 372 377 393 354C424 368 454 358 468 335C492 342 515 333 528 313C547 316 566 308 575 291C587 282 602 281 620 280V409H38Z" fill="url(#bottom-glow)"/>
-        <path d="M50 295C70 342 111 350 146 337C162 361 186 368 214 361C233 383 275 383 298 368C323 386 364 388 392 367C421 382 460 370 475 350C510 360 542 345 554 312C571 315 590 310 605 298L622 400H37Z" fill="#9FBCE9" opacity=".54"/>
-        <rect x="45" y="219" width="563" height="180" fill="url(#litho)" mask="url(#litho-mask)"/>
-        <path d="M113 205C111 172 126 148 149 137C159 133 170 132 176 133" fill="none" stroke="white" stroke-opacity=".9" stroke-width="5" stroke-linecap="round"/>
-        <path d="M232 115C249 85 280 68 311 69" fill="none" stroke="white" stroke-width="7" stroke-linecap="round"/>
-        <!-- The rolled wisp is the character's identifying mark. -->
-        <path d="M432 157C446 131 484 131 492 152C499 169 484 183 470 179C456 176 457 161 469 158C475 157 480 160 480 164C474 160 466 164 468 170C470 177 482 175 486 167C493 152 476 142 461 144C447 145 440 150 432 157Z" fill="url(#wind-ink)"/>
-      </g>
-    </g>
-    <g id="eye">
-      <path d="M-13 3C-13-12-8-22 1-23C10-24 15-12 14 3C14 16 8 24 0 23C-8 22-13 15-13 3Z" fill="#172A5B"/>
-      <ellipse cx="4" cy="-10" rx="4" ry="5" fill="#FFFEF3"/>
-    </g>
-    <g id="cheeks" fill="#A6C4E9">
-      <path d="M186 282q5-7 13-9q-3 7-11 12Z"/><path d="M199 282q4-5 11-7q-1 6-9 10Z"/>
-      <path d="M369 278q5-7 13-9q-3 7-11 12Z"/><path d="M382 278q4-5 11-7q-1 6-9 10Z"/>
-    </g>
-    <g id="spark" fill="#F7B329">
-      <path d="M0-25C1-8 5-3 18-4C8 1 6 6 8 18C2 9-3 6-15 9C-7 3-4-4 0-25Z"/>
-    </g>
-  </defs>
-  <g transform="translate(0 -4)">
-    <use xlink:href="#body"/><use xlink:href="#cheeks"/>
-    <path d="M213 209C223 196 241 192 249 198C235 198 226 203 217 211Z" fill="#243A66"/>
-    <use xlink:href="#eye" transform="translate(240 246) rotate(9)"/>
-    <use xlink:href="#eye" transform="translate(322 237) rotate(12)"/>
-    <path d="M264 275C273 283 290 282 301 269" fill="none" stroke="#172A5B" stroke-width="6.7" stroke-linecap="round"/>
-  </g>
-  <g transform="translate(640)"><g transform="translate(3 5) rotate(7 320 230)">
-    <use xlink:href="#body"/><use xlink:href="#cheeks"/>
-    <path d="M210 203C216 188 232 183 243 187C228 188 222 195 214 205Z" fill="#243A66"/>
-    <path d="M296 209C305 201 316 202 326 207" fill="none" stroke="#243A66" stroke-width="4" stroke-linecap="round"/>
-    <use xlink:href="#eye" transform="translate(229 246) rotate(23) scale(1 .91)"/>
-    <use xlink:href="#eye" transform="translate(307 241) rotate(23) scale(.97 .85)"/>
-    <path d="M251 278C257 272 267 273 269 278C270 286 255 292 251 285C249 282 250 280 251 278Z" fill="#233765"/>
-  </g></g>
-  <g transform="translate(1280)"><g transform="translate(-1 -7) rotate(-4 320 230)">
-    <use xlink:href="#body"/><use xlink:href="#cheeks"/>
-    <path d="M216 236C224 216 244 214 255 227" fill="none" stroke="#172A5B" stroke-width="9" stroke-linecap="round"/>
-    <use xlink:href="#eye" transform="translate(324 229) rotate(-9)"/>
-    <path d="M260 260C273 268 296 266 309 252C306 274 294 289 278 288C265 287 259 278 260 260Z" fill="#172A5B"/>
-    <path d="M271 263C281 266 294 264 301 260C296 267 282 272 271 270Z" fill="#FFFEF3"/>
-  </g><use xlink:href="#spark" transform="translate(558 128) rotate(13)"/><use xlink:href="#spark" transform="translate(586 147) scale(.43)"/></g>
-</svg></template>
-</body>
+<body><p><a href="https://gug671079-collab.github.io/di9/">进入第九届设创双年晚会 · 云朵分院帽</a></p></body>
 </html>
