@@ -58,7 +58,9 @@
     return {nextQuestion, result, completed:!nextQuestion, followupCount:extra.length, totalQuestions};
   }
   const ready = readiness.questionsReady && readiness.personalitiesReady;
-  const api = {axes, main, followups, personalities, getState, readiness, ready};
+  // The original empty workbook predates revision metadata.
+  const revision = content?.revision ?? "59dce652e0b739d34431";
+  const api = {axes, main, followups, personalities, getState, readiness, ready, revision};
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (typeof window !== "undefined") window.CloudQuiz = api;
 })();

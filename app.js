@@ -18,6 +18,22 @@
   const labels = ["A", "B"];
   let answers = [];
   let playing = false;
+  let previousChoice = null;
+  const picker = document.createElement("details");
+  if (!engine.ready) {
+    picker.className = "edition-picker";
+    picker.append(node("summary", "", "切换首页方案"));
+    const nav = node("nav");
+    nav.setAttribute("aria-label", "试玩首页方案");
+    for (const [key, variant] of Object.entries(editions)) {
+      const link = node("a", "", variant.name);
+      link.href = "?theme=" + key;
+      if (key === theme) link.setAttribute("aria-current", "page");
+      nav.append(link);
+    }
+    picker.append(nav);
+    document.querySelector("footer").append(picker);
+  }
 
   function node(tag, className, text) {
     const element = document.createElement(tag);
@@ -53,13 +69,18 @@
 
   function remember() {
     try {
-      if (playing) sessionStorage.setItem(storageKey, JSON.stringify(answers));
+      if (playing) sessionStorage.setItem(storageKey, JSON.stringify({
+        revision: engine.revision, answers, previousChoice
+      }));
       else sessionStorage.removeItem(storageKey);
     } catch { /* The page also works with browser storage disabled. */ }
   }
 
   function showHome() {
     playing = false;
+    previousChoice = null;
+    picker.hidden = false;
+    picker.open = false;
     answers = [];
     remember();
     const screen = node("section", "landing");
@@ -79,13 +100,14 @@
     window.QuizCounts?.newRun();
     playing = true;
     answers = [];
+    previousChoice = null;
     remember();
     render(true);
   }
 
   function previous() {
     if (!answers.length) { showHome(); main.focus(); return; }
-    answers.pop();
+    previousChoice = answers.pop();
     remember();
     render(true);
   }
@@ -111,73 +133,126 @@
     q.options.forEach((text, i) => {
       const pick = button("", "answer", () => {
         if (!choices.isConnected) return;
+        previousChoice = null;
         answers.push(i);
         remember();
         render(true);
       });
       pick.append(node("span", "letter", labels[i]), node("span", "", text || "选项待填"));
+      if (i === previousChoice) pick.append(node("small", "last-pick", "上次选择"));
       choices.append(pick);
     });
     panel.append(row, progress, title, choices, button(answers.length ? "上一题" : "返回首页", "quiet", previous));
     return panel;
   }
 
-  async function saveResult(item, saveButton, hint) {
-    saveButton.disabled = true;
-    try {
-      const canvas = document.createElement("canvas");
-      canvas.width = 900;
-      const c = canvas.getContext("2d");
-      function wrap(text, font) {
-        c.font = font;
-        const rows = [];
-        let row = "";
-        for (const ch of text) {
-          if (ch === "\n" || (row && c.measureText(row + ch).width > 774)) {
-            rows.push(row);
-            row = "";
-          }
-          if (ch !== "\n") row += ch;
+  async function drawResultCard(item) {
+    const canvas = document.createElement("canvas");
+    canvas.width = 900;
+    const c = canvas.getContext("2d");
+    function wrap(text, font) {
+      c.font = font;
+      const lines = [];
+      let line = "";
+      for (const ch of text) {
+        if (ch === "\n" || (line && c.measureText(line + ch).width > 780)) {
+          lines.push(line);
+          line = "";
         }
-        rows.push(row);
-        return rows;
+        if (ch !== "\n") line += ch;
       }
-      const titleFont = "bold 64px sans-serif";
-      const reasonFont = "34px sans-serif";
-      const titles = wrap(item.title || "人格外号待填", titleFont);
-      const reasons = wrap(item.reason || "一句话解释待填", reasonFont);
-      const reasonY = 806 + titles.length * 72 + 18;
-      const traitsY = Math.max(1110, reasonY + reasons.length * 46 + 38);
-      canvas.height = traitsY + 90;
-      c.fillStyle = edition.ground;
-      c.fillRect(0,0,canvas.width,canvas.height);
-      c.fillStyle = edition.ink; c.font = 'bold 75px "Microsoft YaHei","PingFang SC",sans-serif';
-      c.fillText(edition.name,58,115);
-      c.strokeStyle = edition.ink; c.lineWidth = 2;
-      c.beginPath(); c.moveTo(60,150); c.lineTo(840,150); c.stroke();
-      const img = new Image();
-      img.src = artworkSource("reveal");
-      await img.decode();
-      c.drawImage(img,100,168,700,481);
-      c.fillStyle = edition.accent; c.font = "600 29px sans-serif";
-      c.fillText("MD&I  /  设创生活测试",60,710);
-      c.fillStyle=edition.ink; c.font=titleFont;
-      titles.forEach((line,i) => c.fillText(line,60,806+72*i));
-      c.font=reasonFont;
-      reasons.forEach((line,i) => c.fillText(line,60,reasonY+46*i));
-      c.fillStyle=edition.accent; c.font="bold 28px sans-serif";
-      c.fillText(item.traits.join("   /   "),60,traitsY);
-      const blob=await new Promise((resolve,reject)=>canvas.toBlob(
-        value=>value?resolve(value):reject(new Error("图片生成失败")), "image/png"));
-      const url=URL.createObjectURL(blob);
-      const link=document.createElement("a");
-      link.href=url; link.download=edition.name.replace("？","")+"-"+item.id+".png";
-      document.body.append(link); link.click(); link.remove();
-      setTimeout(()=>URL.revokeObjectURL(url),30000);
-      hint.textContent="结果卡已生成。";
-    } catch {
-      hint.textContent="当前浏览器无法导出图片，可截屏保存结果。";
-    } finally { saveButton.disabled=false; }
+      lines.push(line);
+      return lines;
+    }
+    const titleFont = "bold 64px sans-serif";
+    const reasonFont = "34px sans-serif";
+    const titles = wrap(item.title || "人格外号待填", titleFont);
+    const reasons = wrap(item.reason || "一句话解释待填", reasonFont);
+    const reasonY = 745 + (titles.length - 1) * 75 + 68;
+    const footerY = reasonY + (reasons.length - 1) * 48 + 68;
+    const qrSize = 328;
+    const qrY = footerY + 30;
+    canvas.height = qrY + qrSize + 54;
+    c.fillStyle = edition.ground;
+    c.fillRect(0, 0, canvas.width, canvas.height);
+    c.fillStyle = edition.ink;
+    c.font = 'bold 75px "Microsoft YaHei","PingFang SC",sans-serif';
+    c.fillText(edition.name, 58, 113);
+    c.fillRect(60, 148, 780, 2);
+    const cloud = new Image();
+    cloud.src = artworkSource("reveal");
+    await cloud.decode();
+    c.drawImage(cloud, 120, 151, 660, 454);
+    c.fillStyle = edition.accent;
+    c.font = "600 29px sans-serif";
+    c.fillText("MD&I  /  设创生活测试", 60, 653);
+    c.fillStyle = edition.ink;
+    c.font = titleFont;
+    titles.forEach((line, i) => c.fillText(line, 60, 745 + 75 * i));
+    c.font = reasonFont;
+    reasons.forEach((line, i) => c.fillText(line, 60, reasonY + 48 * i));
+    c.fillRect(60, footerY, 780, 2);
+    c.font = "bold 31px sans-serif";
+    c.fillText(item.traits.join("  /  "), 60, qrY + 49, 422);
+    c.font = "bold 43px sans-serif";
+    c.fillText("扫码测一测", 60, qrY + qrSize - 15);
+    window.QuizQR.draw(c, theme, 840 - qrSize, qrY, qrSize);
+    const url = canvas.toDataURL("image/png");
+    if (!url.startsWith("data:image/png;")) throw new Error("图片生成失败");
+    return url;
+  }
+
+  function cardActions(item, hint) {
+    const preview = node("details", "card-preview");
+    const summary = node("summary", "", "查看原图 · 可长按保存");
+    const image = node("img", "card-original");
+    image.hidden = true;
+    image.alt = edition.name + " · " + (item.title || "人格结果卡");
+    preview.append(summary, image);
+
+    // Use one PNG for both native image actions and the download.
+    let drawing;
+    async function getImage() {
+      if (!drawing) drawing = drawResultCard(item);
+      try {
+        const url = await drawing;
+        if (!image.hasAttribute("src")) image.src = url;
+        image.hidden = false;
+        return url;
+      } catch (error) {
+        drawing = null;
+        throw error;
+      }
+    }
+
+    const failure = "图片暂时无法生成，可重试或截屏保存。";
+    preview.addEventListener("toggle", async () => {
+      if (!preview.open) return;
+      try {
+        await getImage();
+        hint.textContent = "";
+      } catch {
+        hint.textContent = failure;
+      }
+    });
+    const save = button("保存结果卡", "action", async () => {
+      save.disabled = true;
+      try {
+        const url = await getImage();
+        const link = node("a");
+        link.href = url;
+        link.download = edition.name.replace("？", "") + "-" + item.id + ".png";
+        document.body.append(link);
+        link.click();
+        link.remove();
+        hint.textContent = "结果卡已生成。";
+      } catch {
+        hint.textContent = failure;
+      } finally {
+        save.disabled = false;
+      }
+    });
+    return { save, preview };
   }
 
   function resultPanel(item) {
@@ -188,15 +263,16 @@
     const actions = node("div", "panel-actions");
     const hint=node("p","hint");
     hint.setAttribute("role","status");
-    const save=button("保存结果卡","action",()=>saveResult(item,save,hint));
+    const {save, preview} = cardActions(item, hint);
     actions.append(save,button("再测一次","quiet",start),button("改上一题","quiet",previous));
-    panel.append(tags,actions,hint);
+    panel.append(tags,actions,preview,hint);
     window.QuizCounts?.attach(panel,item,answers);
     return panel;
   }
 
   function render(focus) {
     if (!playing) { showHome(); return; }
+    picker.hidden = true;
     const state = getScreen(answers);
     document.title = edition.name + " · " + (state.result ? "我的人格结果" : "情境选择");
     const screen = node("section", "flow");
@@ -218,9 +294,13 @@
 
   try {
     const saved = JSON.parse(sessionStorage.getItem(storageKey));
-    if (Array.isArray(saved) && saved.length <= 9) {
-      getScreen(saved);
-      answers = saved;
+    // Previously published unversioned sessions all used the empty rehearsal bank.
+    const legacy = Array.isArray(saved) && engine.revision === "59dce652e0b739d34431";
+    const history = legacy ? saved : saved?.revision === engine.revision ? saved?.answers : null;
+    if (Array.isArray(history) && history.length <= 9) {
+      getScreen(history);
+      answers = history;
+      previousChoice = [0,1].includes(saved.previousChoice) ? saved.previousChoice : null;
       playing = true;
     }
   } catch { answers = []; playing = false; }

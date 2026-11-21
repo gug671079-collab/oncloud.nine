@@ -7,7 +7,8 @@
   "issues": {
     "questions": 0,
     "personalities": 0
-  }
+  },
+  "revision": "59dce652e0b739d34431"
 };
   if (typeof module !== "undefined" && module.exports) module.exports = content;
   if (typeof window !== "undefined") window.CloudQuizContent = content;
